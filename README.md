@@ -6,12 +6,19 @@
 - [Micronaut Guides](https://guides.micronaut.io/index.html)
 ---
 
-- [Shadow Gradle Plugin](https://gradleup.com/shadow/)
 - [Micronaut Gradle Plugin documentation](https://micronaut-projects.github.io/micronaut-gradle-plugin/latest/)
 - [GraalVM Gradle Plugin documentation](https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html)
-## Feature micronaut-aot documentation
+- [Shadow Gradle Plugin](https://gradleup.com/shadow/)
+## Feature serialization-jackson documentation
 
-- [Micronaut AOT documentation](https://micronaut-projects.github.io/micronaut-aot/latest/guide/)
+- [Micronaut Serialization Jackson Core documentation](https://micronaut-projects.github.io/micronaut-serialization/latest/guide/)
+
+
+## Feature lombok documentation
+
+- [Micronaut Project Lombok documentation](https://docs.micronaut.io/latest/guide/index.html#lombok)
+
+- [https://projectlombok.org/features/all](https://projectlombok.org/features/all)
 
 
 ## Feature swagger-ui documentation
@@ -21,15 +28,15 @@
 - [https://swagger.io/tools/swagger-ui/](https://swagger.io/tools/swagger-ui/)
 
 
-## Feature serialization-jackson documentation
-
-- [Micronaut Serialization Jackson Core documentation](https://micronaut-projects.github.io/micronaut-serialization/latest/guide/)
-
-
 ## Feature openapi documentation
 
 - [Micronaut OpenAPI Support documentation](https://micronaut-projects.github.io/micronaut-openapi/latest/guide/index.html)
 
 - [https://www.openapis.org](https://www.openapis.org)
+
+
+## Feature micronaut-aot documentation
+
+- [Micronaut AOT documentation](https://micronaut-projects.github.io/micronaut-aot/latest/guide/)
 
 
