@@ -1,5 +1,6 @@
 package uk.ac.york.cs.eng2.books.resources;
 
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import uk.ac.york.cs.eng2.books.dto.Book;
 
@@ -25,13 +26,25 @@ public class BooksController {
     }
 
     @Put
-    public void updateBook(@Body Book book) {
-        books.put(book.getId(), book);
+    public HttpResponse updateBook(@Body Book book) {
+
+        if ( books.containsKey(book.getId()) ) {
+            books.put(book.getId(), book);
+            return HttpResponse.ok();
+
+        }else{
+            return HttpResponse.notFound();
+        }
     }
 
-    @Delete
-    public void deleteBook(@Body Book book) {
-        books.remove(book.getId());
+    @Delete("/{id}")
+    public HttpResponse<Object> deleteBook(@PathVariable int id) {
+        if  (books.containsKey(id)) {
+            books.remove(id);
+            return HttpResponse.ok();
+        }else{
+            return HttpResponse.notFound();
+        }
     }
 }
 
