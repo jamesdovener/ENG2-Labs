@@ -18,10 +18,10 @@ public interface BooksClient {
     void createBook(@Body Book book);
 
     @Put
-    HttpResponse updateBook(@Body Book book);
+    HttpResponse<?> updateBook(@Body Book book);
 
     @Delete("/{id}")
-    HttpResponse deleteBook(@PathVariable int id);
+    HttpResponse<?> deleteBook(@PathVariable int id);
 
 
 }

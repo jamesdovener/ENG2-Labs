@@ -26,7 +26,7 @@ public class BooksController {
     }
 
     @Put
-    public HttpResponse updateBook(@Body Book book) {
+    public HttpResponse<?> updateBook(@Body Book book) {
 
         if ( books.containsKey(book.getId()) ) {
             books.put(book.getId(), book);
@@ -38,7 +38,7 @@ public class BooksController {
     }
 
     @Delete("/{id}")
-    public HttpResponse<Object> deleteBook(@PathVariable int id) {
+    public HttpResponse deleteBook(@PathVariable int id) {
         if  (books.containsKey(id)) {
             books.remove(id);
             return HttpResponse.ok();

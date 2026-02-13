@@ -93,7 +93,7 @@ public class BookControllerTest {
 
     @Test
     public void deleteNullBook(){
-        HttpResponse response = booksClient.deleteBook(1);
+        HttpResponse<?> response = booksClient.deleteBook(1);
         assertEquals(HttpStatus.NOT_FOUND, response.status());
     }
 }
