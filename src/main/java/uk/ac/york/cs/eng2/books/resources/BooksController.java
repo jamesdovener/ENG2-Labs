@@ -27,7 +27,7 @@ public class BooksController {
     public HttpResponse<Book> createBook(@Body Book book) {
 
         if ( books.containsKey(book.getId()) ) {
-            return  HttpResponse.status(HttpStatus.BAD_REQUEST);
+            return  HttpResponse.status(HttpStatus.CONFLICT);
         }else{
             books.put(book.getId(), book);
             return HttpResponse.created(book);

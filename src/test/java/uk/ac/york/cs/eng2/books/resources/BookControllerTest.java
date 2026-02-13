@@ -113,10 +113,10 @@ public class BookControllerTest {
         booksClient.createBook(book);
 
         HttpClientResponseException exception =
-                            assertThrows(HttpClientResponseException.class,
-                            () -> booksClient.createBook(book)
+                assertThrows(HttpClientResponseException.class,
+                () -> booksClient.createBook(book)
         );
 
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
 }
