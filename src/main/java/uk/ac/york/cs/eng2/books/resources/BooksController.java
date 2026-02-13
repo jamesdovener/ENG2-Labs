@@ -8,6 +8,7 @@ import java.util.*;
 
 @Controller("/books")
 public class BooksController {
+
     private Map<Integer, Book> books = new HashMap<>();
 
     @Get
@@ -21,8 +22,14 @@ public class BooksController {
     }
 
     @Post
-    public void createBook(@Body Book book) {
-        books.put(book.getId(), book);
+    public HttpResponse<Book> createBook(@Body Book book) {
+
+        if ( books.containsKey(book.getId()) ) {
+            return  HttpResponse.badRequest();
+        }else{
+            books.put(book.getId(), book);
+            return HttpResponse.created(book);
+        }
     }
 
     @Put
