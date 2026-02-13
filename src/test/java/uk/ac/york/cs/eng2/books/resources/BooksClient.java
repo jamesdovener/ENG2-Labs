@@ -3,6 +3,7 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.client.annotation.Client;
 import uk.ac.york.cs.eng2.books.dto.Book;
+import uk.ac.york.cs.eng2.books.dto.BookUpdateDTO;
 
 import java.util.List;
 
@@ -15,10 +16,11 @@ public interface BooksClient {
     Book getBook(@PathVariable int id);
 
     @Post
-    void createBook(@Body Book book);
+    HttpResponse<Book> createBook(@Body Book book);
 
-    @Put
-    HttpResponse<?> updateBook(@Body Book book);
+    @Put("/{id}")
+    HttpResponse<?> updateBook( @PathVariable int id,
+                                @Body BookUpdateDTO bookUpdateDTO);
 
     @Delete("/{id}")
     HttpResponse<?> deleteBook(@PathVariable int id);

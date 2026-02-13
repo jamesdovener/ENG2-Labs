@@ -1,8 +1,10 @@
 package uk.ac.york.cs.eng2.books.resources;
 
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.*;
 import uk.ac.york.cs.eng2.books.dto.Book;
+import uk.ac.york.cs.eng2.books.dto.BookUpdateDTO;
 
 import java.util.*;
 
@@ -25,19 +27,22 @@ public class BooksController {
     public HttpResponse<Book> createBook(@Body Book book) {
 
         if ( books.containsKey(book.getId()) ) {
-            return  HttpResponse.badRequest();
+            return  HttpResponse.status(HttpStatus.BAD_REQUEST);
         }else{
             books.put(book.getId(), book);
             return HttpResponse.created(book);
         }
     }
 
-    @Put
-    public HttpResponse<?> updateBook(@Body Book book) {
+    @Put("/{id}")
+    public HttpResponse<?> updateBook(@PathVariable int id, @Body BookUpdateDTO bookUpdate) {
 
-        if ( books.containsKey(book.getId()) ) {
-            books.put(book.getId(), book);
-            return HttpResponse.ok();
+        if ( books.containsKey(id) ) {
+            Book book = books.get(id);
+            book.setTitle(bookUpdate.getTitle());
+            book.setAuthor(bookUpdate.getAuthor());
+
+            return HttpResponse.ok(book);
 
         }else{
             return HttpResponse.notFound();
