@@ -38,7 +38,7 @@ public class BooksController {
     }
 
     @Delete("/{id}")
-    public HttpResponse deleteBook(@PathVariable int id) {
+    public HttpResponse<?> deleteBook(@PathVariable int id) {
         if  (books.containsKey(id)) {
             books.remove(id);
             return HttpResponse.ok();
