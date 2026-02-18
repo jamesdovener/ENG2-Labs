@@ -5,18 +5,18 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.client.annotation.Client;
-import uk.ac.york.cs.eng2.books.dto.Author;
+import uk.ac.york.cs.eng2.books.dto.AuthorDTO;
 
 import java.util.List;
 
 @Client("/authors")
 public interface AuthorsClient {
     @Get
-    List<Author> getAuthors();
+    List<AuthorDTO> getAuthors();
 
     @Get("/{id}")
-    Author getAuthor(@PathVariable int id);
+    AuthorDTO getAuthor(@PathVariable int id);
 
     @Post
-    Author createAuthor(@Body Author author);
+    AuthorDTO createAuthor(@Body AuthorDTO authorDTO);
 }

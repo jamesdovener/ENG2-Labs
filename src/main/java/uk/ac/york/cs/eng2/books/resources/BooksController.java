@@ -3,56 +3,104 @@ package uk.ac.york.cs.eng2.books.resources;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.*;
-import uk.ac.york.cs.eng2.books.dto.Book;
+import io.micronaut.transaction.annotation.Transactional;
+import jakarta.inject.Inject;
+import uk.ac.york.cs.eng2.books.BookRepository;
+import uk.ac.york.cs.eng2.books.domain.Book;
+import uk.ac.york.cs.eng2.books.dto.BookDTO;
 import uk.ac.york.cs.eng2.books.dto.BookUpdateDTO;
 
+import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller("/books")
 public class BooksController {
 
-    private Map<Integer, Book> books = new HashMap<>();
+    @Inject
+    private BookRepository repository;
+
+    public List<BookDTO> bookToBookDTO(List<Book> books) {
+
+        return books.stream().
+                map(Book -> new BookDTO(
+                        Book.getId(),
+                        Book.getAuthor(),
+                        Book.getTitle()
+                )).toList();
+    }
+
+    public BookDTO bookToBookDTO(Book book) {
+        return new BookDTO(
+                book.getId(),
+                book.getAuthor(),
+                book.getTitle()
+        );
+
+    }
+
+    public Book bookDTOToBook(BookDTO bookDTO){
+        return new Book(
+                bookDTO.getId(),
+                bookDTO.getAuthor(),
+                bookDTO.getTitle()
+        );
+    }
+
+
 
     @Get
-    public List<Book> getBooks() {
-        return new ArrayList<>(books.values());
+    public List<BookDTO> getBooks() {
+        List<Book> books = repository.findAll();
+        return bookToBookDTO(books);
     }
 
     @Get("/{id}")
-    public Book getBook(@PathVariable int id) {
-        return books.get(id);
-    }
-
-    @Post
-    public HttpResponse<Book> createBook(@Body Book book) {
-
-        if ( books.containsKey(book.getId()) ) {
-            return  HttpResponse.status(HttpStatus.CONFLICT);
+    public HttpResponse<Book> getBook(@PathVariable Long id) {
+        Optional<Book> o = repository.findById(id);
+        if ( o.isPresent() ) {
+            return HttpResponse.ok(o.get());
         }else{
-            books.put(book.getId(), book);
-            return HttpResponse.created(book);
+            return HttpResponse.status(HttpStatus.NOT_FOUND);
         }
     }
 
-    @Put("/{id}")
-    public HttpResponse<?> updateBook(@PathVariable int id, @Body BookUpdateDTO bookUpdate) {
+    @Post
+    public HttpResponse<BookDTO> createBook(@Body BookDTO bookDTO) {
 
-        if ( books.containsKey(id) ) {
-            Book book = books.get(id);
+        if ( repository.existsById(bookDTO.getId()) ) {
+            return  HttpResponse.status(HttpStatus.CONFLICT);
+        }else{
+            repository.save(bookDTOToBook(bookDTO));
+            return HttpResponse.created(URI.create("/books/" + bookDTO.getId()));
+        }
+    }
+
+    @Transactional
+    @Put("/{id}")
+    public HttpResponse<Book> updateBook(@PathVariable Long id, @Body BookUpdateDTO bookUpdate) {
+
+        Optional<Book> o = repository.findById(id);
+
+        if ( o.isPresent() ) {
+            Book book = o.get();
             book.setTitle(bookUpdate.getTitle());
             book.setAuthor(bookUpdate.getAuthor());
 
             return HttpResponse.ok(book);
 
         }else{
-            return HttpResponse.notFound();
+            return HttpResponse.status(HttpStatus.NOT_FOUND);
         }
     }
 
     @Delete("/{id}")
-    public HttpResponse<?> deleteBook(@PathVariable int id) {
-        if  (books.containsKey(id)) {
-            books.remove(id);
+    public HttpResponse<?> deleteBook(@PathVariable Long id) {
+
+        Optional<Book> o = repository.findById(id);
+
+        if  ( o.isPresent() ) {
+            repository.deleteById(id);
             return HttpResponse.ok();
         }else{
             return HttpResponse.notFound();

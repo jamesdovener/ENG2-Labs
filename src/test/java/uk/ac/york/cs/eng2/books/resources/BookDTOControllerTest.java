@@ -7,31 +7,29 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.ac.york.cs.eng2.books.dto.Book;
+import uk.ac.york.cs.eng2.books.BookRepository;
+import uk.ac.york.cs.eng2.books.dto.BookDTO;
 import uk.ac.york.cs.eng2.books.dto.BookUpdateDTO;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@MicronautTest(rebuildContext = true)
-public class BookControllerTest {
+@MicronautTest(transactional = false)
+public class BookDTOControllerTest {
 
     @Inject
     private BooksClient booksClient;
-
-    private Book book;
+    private BookRepository bookRepository;
+    private BookDTO bookDTO;
     private BookUpdateDTO bookUpdate;
 
     @BeforeEach
     void setUp(){
-        book = new Book();
+        bookDTO = new BookDTO();
         bookUpdate = new BookUpdateDTO();
 
-        book.setId(1);
-        book.setAuthor("Author 1");
-        book.setTitle("Title 1");
+        bookDTO.setId(1L);
+        bookDTO.setAuthor("Author 1");
+        bookDTO.setTitle("Title 1");
 
         bookUpdate.setAuthor("Updated Author");
         bookUpdate.setTitle("Updated Title");
@@ -47,62 +45,62 @@ public class BookControllerTest {
     @Test
     public void addBook(){
         // Act
-        booksClient.createBook(book);
+        booksClient.createBook(bookDTO);
         // Assert
-        assertEquals(book, booksClient.getBooks().get(0));
+        assertEquals(bookDTO, booksClient.getBooks().get(0));
     }
 
     @Test
     public void getBook(){
         // Act
-        booksClient.createBook(book);
+        booksClient.createBook(bookDTO);
         // Assert
-        assertEquals(book, booksClient.getBook(1));
+        assertEquals(bookDTO, booksClient.getBook(1L));
     }
 
     @Test
     public void bookDoesNotExist(){
         // Assert
-        assertNull(booksClient.getBook(0));
+        assertNull(booksClient.getBook(0L));
     }
 
     @Test
     public void updateTitle(){
         // Arrange
-        booksClient.createBook(book);
+        booksClient.createBook(bookDTO);
         // Act
-        booksClient.updateBook(book.getId(), bookUpdate);
+        booksClient.updateBook(bookDTO.getId(), bookUpdate);
         // Assert
-        assertEquals("Updated Title", booksClient.getBook(1).getTitle());
+        assertEquals("Updated Title", booksClient.getBook(1L).getTitle());
     }
 
     @Test
     public void updateAuthor(){
         // Arrange
-        booksClient.createBook(book);
+        booksClient.createBook(bookDTO);
         // Act
-        booksClient.updateBook(book.getId(), bookUpdate);
+        booksClient.updateBook(bookDTO.getId(), bookUpdate);
         // Assert
-        assertEquals("Updated Author", booksClient.getBook(1).getAuthor());
+        assertEquals("Updated Author", booksClient.getBook(1L).getAuthor());
     }
 
     @Test
     public void deleteBook(){
-        booksClient.createBook(book);
-        booksClient.deleteBook(1);
-        assertNull(booksClient.getBook(1));
+        booksClient.createBook(bookDTO);
+        booksClient.deleteBook(1L);
+        assertNull(booksClient.getBook(1L));
     }
 
     @Test
     public void updateNullBook(){
 
-        assertEquals(HttpStatus.NOT_FOUND, booksClient.updateBook(book.getId(), bookUpdate).getStatus());
+        assertEquals(HttpStatus.NOT_FOUND, booksClient.updateBook(bookDTO.getId(), bookUpdate).getStatus());
     }
 
     @Test
     public void deleteNullBook(){
 
-        HttpResponse<?> response = booksClient.deleteBook(1);
+        HttpResponse<?> response = booksClient.deleteBook(1L);
 
         assertEquals(HttpStatus.NOT_FOUND, response.status());
     }
@@ -110,11 +108,11 @@ public class BookControllerTest {
     @Test
     public void createExistingBook(){
 
-        booksClient.createBook(book);
+        booksClient.createBook(bookDTO);
 
         HttpClientResponseException exception =
                 assertThrows(HttpClientResponseException.class,
-                () -> booksClient.createBook(book)
+                () -> booksClient.createBook(bookDTO)
         );
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());

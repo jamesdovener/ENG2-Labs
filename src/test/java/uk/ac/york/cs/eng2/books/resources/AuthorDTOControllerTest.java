@@ -1,30 +1,29 @@
 package uk.ac.york.cs.eng2.books.resources;
 
-import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.ac.york.cs.eng2.books.dto.Author;
+import uk.ac.york.cs.eng2.books.dto.AuthorDTO;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest(rebuildContext = true)
-public class AuthorControllerTest {
+public class AuthorDTOControllerTest {
 
     @Inject
     private AuthorsClient authorsClient;
 
-    private Author author;
+    private AuthorDTO authorDTO;
 
     @BeforeEach
     public void setup() {
-        author = new Author();
-        author.setId(0);
-        author.setFirstName("John");
-        author.setLastName("Doe");
+        authorDTO = new AuthorDTO();
+        authorDTO.setId(0);
+        authorDTO.setFirstName("John");
+        authorDTO.setLastName("Doe");
     }
 
     @Test
@@ -34,26 +33,26 @@ public class AuthorControllerTest {
 
     @Test
     public void addAuthor() {
-        authorsClient.createAuthor(author);
-        assertEquals(author, authorsClient.getAuthors().get(0));
+        authorsClient.createAuthor(authorDTO);
+        assertEquals(authorDTO, authorsClient.getAuthors().get(0));
     }
 
     @Test
     public void createExistingAuthor() {
-        authorsClient.createAuthor(author);
+        authorsClient.createAuthor(authorDTO);
         System.out.println(authorsClient.getAuthors());
         HttpClientResponseException exception =
                 assertThrows(HttpClientResponseException.class,
-                () -> authorsClient.createAuthor(author)
+                () -> authorsClient.createAuthor(authorDTO)
                 );
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     }
 
     @Test
     public void getAuthorById() {
-        authorsClient.createAuthor(author);
+        authorsClient.createAuthor(authorDTO);
 
-        Author retrieved_author = authorsClient.getAuthor(author.getId());
-        assertEquals(author, retrieved_author);
+        AuthorDTO retrieved_authorDTO = authorsClient.getAuthor(authorDTO.getId());
+        assertEquals(authorDTO, retrieved_authorDTO);
     }
 }

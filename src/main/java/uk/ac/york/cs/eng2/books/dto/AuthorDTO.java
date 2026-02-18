@@ -8,7 +8,7 @@ import lombok.Setter;
 @Serdeable
 @Getter @Setter
 @EqualsAndHashCode
-public class Author {
+public class AuthorDTO {
     private int id;
     private String firstName;
     private String lastName;
