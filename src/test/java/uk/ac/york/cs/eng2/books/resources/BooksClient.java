@@ -2,28 +2,28 @@ package uk.ac.york.cs.eng2.books.resources;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.client.annotation.Client;
-import uk.ac.york.cs.eng2.books.dto.Book;
-import uk.ac.york.cs.eng2.books.dto.BookUpdateDTO;
+import uk.ac.york.cs.eng2.books.dto.BookDTO;
+import uk.ac.york.cs.eng2.books.dto.BookCreateDTO;
 
 import java.util.List;
 
 @Client("/books")
 public interface BooksClient {
     @Get
-    List<Book> getBooks();
+    List<BookDTO> getBooks();
 
     @Get("/{id}")
-    Book getBook(@PathVariable int id);
+    BookDTO getBook(@PathVariable Long id);
 
     @Post
-    HttpResponse<Book> createBook(@Body Book book);
+    HttpResponse<BookDTO> createBook(@Body BookDTO bookDTO);
 
     @Put("/{id}")
-    HttpResponse<?> updateBook( @PathVariable int id,
-                                @Body BookUpdateDTO bookUpdateDTO);
+    HttpResponse<?> updateBook( @PathVariable Long id,
+                                @Body BookCreateDTO bookCreateDTO);
 
     @Delete("/{id}")
-    HttpResponse<?> deleteBook(@PathVariable int id);
+    HttpResponse<?> deleteBook(@PathVariable Long id);
 
 
 }
