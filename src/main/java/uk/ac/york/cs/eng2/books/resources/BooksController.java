@@ -8,12 +8,11 @@ import jakarta.inject.Inject;
 import uk.ac.york.cs.eng2.books.BookRepository;
 import uk.ac.york.cs.eng2.books.domain.Book;
 import uk.ac.york.cs.eng2.books.dto.BookDTO;
-import uk.ac.york.cs.eng2.books.dto.BookUpdateDTO;
+import uk.ac.york.cs.eng2.books.dto.BookCreateDTO;
 
-import java.net.URI;
 import java.util.*;
-import java.util.stream.Collectors;
 
+@Transactional
 @Controller("/books")
 public class BooksController {
 
@@ -56,10 +55,10 @@ public class BooksController {
     }
 
     @Get("/{id}")
-    public HttpResponse<Book> getBook(@PathVariable Long id) {
+    public HttpResponse<BookDTO> getBook(@PathVariable Long id) {
         Optional<Book> o = repository.findById(id);
         if ( o.isPresent() ) {
-            return HttpResponse.ok(o.get());
+            return HttpResponse.ok(bookToBookDTO(o.get()));
         }else{
             return HttpResponse.status(HttpStatus.NOT_FOUND);
         }
@@ -68,17 +67,16 @@ public class BooksController {
     @Post
     public HttpResponse<BookDTO> createBook(@Body BookDTO bookDTO) {
 
-        if ( repository.existsById(bookDTO.getId()) ) {
+        if (repository.existsByTitleAndAuthor(bookDTO.getTitle(), bookDTO.getAuthor())) {
             return  HttpResponse.status(HttpStatus.CONFLICT);
         }else{
-            repository.save(bookDTOToBook(bookDTO));
-            return HttpResponse.created(URI.create("/books/" + bookDTO.getId()));
+            Book saved = repository.save(bookDTOToBook(bookDTO));
+            return HttpResponse.created(bookToBookDTO(saved));
         }
     }
 
-    @Transactional
     @Put("/{id}")
-    public HttpResponse<Book> updateBook(@PathVariable Long id, @Body BookUpdateDTO bookUpdate) {
+    public HttpResponse<BookDTO> updateBook(@PathVariable Long id, @Body BookCreateDTO bookUpdate) {
 
         Optional<Book> o = repository.findById(id);
 
@@ -87,7 +85,7 @@ public class BooksController {
             book.setTitle(bookUpdate.getTitle());
             book.setAuthor(bookUpdate.getAuthor());
 
-            return HttpResponse.ok(book);
+            return HttpResponse.ok(bookToBookDTO(book));
 
         }else{
             return HttpResponse.status(HttpStatus.NOT_FOUND);
@@ -107,7 +105,5 @@ public class BooksController {
         }
     }
 }
-
-
 
 

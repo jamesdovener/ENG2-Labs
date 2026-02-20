@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.york.cs.eng2.books.BookRepository;
 import uk.ac.york.cs.eng2.books.dto.BookDTO;
-import uk.ac.york.cs.eng2.books.dto.BookUpdateDTO;
+import uk.ac.york.cs.eng2.books.dto.BookCreateDTO;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,22 +18,21 @@ public class BookDTOControllerTest {
 
     @Inject
     private BooksClient booksClient;
+    @Inject
     private BookRepository bookRepository;
     private BookDTO bookDTO;
-    private BookUpdateDTO bookUpdate;
+    private BookCreateDTO bookCreateDTO;
 
     @BeforeEach
     void setUp(){
         bookDTO = new BookDTO();
-        bookUpdate = new BookUpdateDTO();
-
-        bookDTO.setId(1L);
+        bookCreateDTO = new BookCreateDTO();
+        bookRepository.deleteAll();
         bookDTO.setAuthor("Author 1");
         bookDTO.setTitle("Title 1");
 
-        bookUpdate.setAuthor("Updated Author");
-        bookUpdate.setTitle("Updated Title");
-
+        bookCreateDTO.setAuthor("Author 1");
+        bookCreateDTO.setTitle("Title 1");
     }
 
     @Test
@@ -45,7 +44,8 @@ public class BookDTOControllerTest {
     @Test
     public void addBook(){
         // Act
-        booksClient.createBook(bookDTO);
+        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        bookDTO.setId(response.body().getId());
         // Assert
         assertEquals(bookDTO, booksClient.getBooks().get(0));
     }
@@ -53,9 +53,11 @@ public class BookDTOControllerTest {
     @Test
     public void getBook(){
         // Act
-        booksClient.createBook(bookDTO);
+        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        Long id = response.body().getId();
+        bookDTO.setId(id);
         // Assert
-        assertEquals(bookDTO, booksClient.getBook(1L));
+        assertEquals(bookDTO, booksClient.getBook(id));
     }
 
     @Test
@@ -67,34 +69,37 @@ public class BookDTOControllerTest {
     @Test
     public void updateTitle(){
         // Arrange
-        booksClient.createBook(bookDTO);
+        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        Long id = response.body().getId();
         // Act
-        booksClient.updateBook(bookDTO.getId(), bookUpdate);
+        booksClient.updateBook(id, bookCreateDTO);
         // Assert
-        assertEquals("Updated Title", booksClient.getBook(1L).getTitle());
+        assertEquals("Updated Title", booksClient.getBook(id).getTitle());
     }
 
     @Test
     public void updateAuthor(){
         // Arrange
-        booksClient.createBook(bookDTO);
+        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        Long id = response.body().getId();
         // Act
-        booksClient.updateBook(bookDTO.getId(), bookUpdate);
+        booksClient.updateBook(id, bookCreateDTO);
         // Assert
-        assertEquals("Updated Author", booksClient.getBook(1L).getAuthor());
+        assertEquals("Updated Author", booksClient.getBook(id).getAuthor());
     }
 
     @Test
     public void deleteBook(){
-        booksClient.createBook(bookDTO);
-        booksClient.deleteBook(1L);
-        assertNull(booksClient.getBook(1L));
+        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        Long id = response.body().getId();
+        booksClient.deleteBook(id);
+        assertNull(booksClient.getBook(id));
     }
 
     @Test
     public void updateNullBook(){
 
-        assertEquals(HttpStatus.NOT_FOUND, booksClient.updateBook(bookDTO.getId(), bookUpdate).getStatus());
+        assertEquals(HttpStatus.NOT_FOUND, booksClient.updateBook(0L, bookCreateDTO).getStatus());
     }
 
     @Test
@@ -108,7 +113,8 @@ public class BookDTOControllerTest {
     @Test
     public void createExistingBook(){
 
-        booksClient.createBook(bookDTO);
+        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        assertEquals(HttpStatus.CREATED, response.status());
 
         HttpClientResponseException exception =
                 assertThrows(HttpClientResponseException.class,

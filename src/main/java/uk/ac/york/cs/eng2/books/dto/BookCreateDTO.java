@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Serdeable
 @Getter @Setter
-public class BookUpdateDTO {
+public class BookCreateDTO {
     private String title;
     private String author;
 }
