@@ -22,14 +22,20 @@ public class BookDTOControllerTest {
     private BookRepository bookRepository;
     private BookDTO bookDTO;
     private BookCreateDTO bookCreateDTO;
+    private BookCreateDTO updatedDTO;
 
     @BeforeEach
     void setUp(){
         bookDTO = new BookDTO();
         bookCreateDTO = new BookCreateDTO();
+        updatedDTO = new BookCreateDTO();
         bookRepository.deleteAll();
+
         bookDTO.setAuthor("Author 1");
         bookDTO.setTitle("Title 1");
+
+        updatedDTO.setAuthor("Updated Author");
+        updatedDTO.setTitle("Updated Title");
 
         bookCreateDTO.setAuthor("Author 1");
         bookCreateDTO.setTitle("Title 1");
@@ -44,7 +50,7 @@ public class BookDTOControllerTest {
     @Test
     public void addBook(){
         // Act
-        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        HttpResponse<BookDTO> response = booksClient.createBook(bookCreateDTO);
         bookDTO.setId(response.body().getId());
         // Assert
         assertEquals(bookDTO, booksClient.getBooks().get(0));
@@ -53,7 +59,7 @@ public class BookDTOControllerTest {
     @Test
     public void getBook(){
         // Act
-        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        HttpResponse<BookDTO> response = booksClient.createBook(bookCreateDTO);
         Long id = response.body().getId();
         bookDTO.setId(id);
         // Assert
@@ -69,10 +75,10 @@ public class BookDTOControllerTest {
     @Test
     public void updateTitle(){
         // Arrange
-        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        HttpResponse<BookDTO> response = booksClient.createBook(bookCreateDTO);
         Long id = response.body().getId();
         // Act
-        booksClient.updateBook(id, bookCreateDTO);
+        booksClient.updateBook(id, updatedDTO);
         // Assert
         assertEquals("Updated Title", booksClient.getBook(id).getTitle());
     }
@@ -80,17 +86,17 @@ public class BookDTOControllerTest {
     @Test
     public void updateAuthor(){
         // Arrange
-        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        HttpResponse<BookDTO> response = booksClient.createBook(bookCreateDTO);
         Long id = response.body().getId();
         // Act
-        booksClient.updateBook(id, bookCreateDTO);
+        booksClient.updateBook(id, updatedDTO);
         // Assert
         assertEquals("Updated Author", booksClient.getBook(id).getAuthor());
     }
 
     @Test
     public void deleteBook(){
-        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        HttpResponse<BookDTO> response = booksClient.createBook(bookCreateDTO);
         Long id = response.body().getId();
         booksClient.deleteBook(id);
         assertNull(booksClient.getBook(id));
@@ -113,12 +119,12 @@ public class BookDTOControllerTest {
     @Test
     public void createExistingBook(){
 
-        HttpResponse<BookDTO> response = booksClient.createBook(bookDTO);
+        HttpResponse<BookDTO> response = booksClient.createBook(bookCreateDTO);
         assertEquals(HttpStatus.CREATED, response.status());
 
         HttpClientResponseException exception =
                 assertThrows(HttpClientResponseException.class,
-                () -> booksClient.createBook(bookDTO)
+                () -> booksClient.createBook(bookCreateDTO)
         );
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());

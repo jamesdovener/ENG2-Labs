@@ -10,6 +10,7 @@ import uk.ac.york.cs.eng2.books.domain.Book;
 import uk.ac.york.cs.eng2.books.dto.BookDTO;
 import uk.ac.york.cs.eng2.books.dto.BookCreateDTO;
 
+import java.net.URI;
 import java.util.*;
 
 @Transactional
@@ -19,59 +20,30 @@ public class BooksController {
     @Inject
     private BookRepository repository;
 
-    public List<BookDTO> bookToBookDTO(List<Book> books) {
-
-        return books.stream().
-                map(Book -> new BookDTO(
-                        Book.getId(),
-                        Book.getAuthor(),
-                        Book.getTitle()
-                )).toList();
-    }
-
-    public BookDTO bookToBookDTO(Book book) {
-        return new BookDTO(
-                book.getId(),
-                book.getAuthor(),
-                book.getTitle()
-        );
-
-    }
-
-    public Book bookDTOToBook(BookDTO bookDTO){
-        return new Book(
-                bookDTO.getId(),
-                bookDTO.getAuthor(),
-                bookDTO.getTitle()
-        );
-    }
-
-
-
     @Get
     public List<BookDTO> getBooks() {
         List<Book> books = repository.findAll();
-        return bookToBookDTO(books);
+        return books.stream().map(Book::toDTO).toList();
     }
 
     @Get("/{id}")
     public HttpResponse<BookDTO> getBook(@PathVariable Long id) {
         Optional<Book> o = repository.findById(id);
         if ( o.isPresent() ) {
-            return HttpResponse.ok(bookToBookDTO(o.get()));
+            return HttpResponse.ok(o.get().toDTO());
         }else{
             return HttpResponse.status(HttpStatus.NOT_FOUND);
         }
     }
 
     @Post
-    public HttpResponse<BookDTO> createBook(@Body BookDTO bookDTO) {
+    public HttpResponse<BookDTO> createBook(@Body BookCreateDTO dto) {
 
-        if (repository.existsByTitleAndAuthor(bookDTO.getTitle(), bookDTO.getAuthor())) {
+        if (repository.existsByTitleAndAuthor(dto.getTitle(), dto.getAuthor())) {
             return  HttpResponse.status(HttpStatus.CONFLICT);
         }else{
-            Book saved = repository.save(bookDTOToBook(bookDTO));
-            return HttpResponse.created(bookToBookDTO(saved));
+            Book saved = repository.save(dto.toBook());
+            return HttpResponse.created(saved.toDTO());
         }
     }
 
@@ -85,7 +57,7 @@ public class BooksController {
             book.setTitle(bookUpdate.getTitle());
             book.setAuthor(bookUpdate.getAuthor());
 
-            return HttpResponse.ok(bookToBookDTO(book));
+            return HttpResponse.ok(book.toDTO());
 
         }else{
             return HttpResponse.status(HttpStatus.NOT_FOUND);

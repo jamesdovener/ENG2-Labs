@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import uk.ac.york.cs.eng2.books.dto.BookDTO;
 
 @Entity
 public class Book {
@@ -16,6 +17,14 @@ public class Book {
         this.id     = id;
         this.author = author;
         this.title  = title;
+    }
+
+    public BookDTO toDTO() {
+        BookDTO dto = new BookDTO();
+        dto.setId(this.id);
+        dto.setAuthor(this.author);
+        dto.setTitle(this.title);
+        return dto;
     }
 
     @Id

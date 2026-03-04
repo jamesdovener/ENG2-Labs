@@ -10,14 +10,10 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class BookDTO {
 
-    public BookDTO() {}
-    public BookDTO(Long id, String author, String title){
-        this.id = id;
-        this.author = author;
-        this.title = title;
-    }
-
     private String title;
     private String author;
     private Long id;
+
+    public BookDTO() {}
+    
 }

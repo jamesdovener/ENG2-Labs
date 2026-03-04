@@ -16,7 +16,7 @@ public interface BooksClient {
     BookDTO getBook(@PathVariable Long id);
 
     @Post
-    HttpResponse<BookDTO> createBook(@Body BookDTO bookDTO);
+    HttpResponse<BookDTO> createBook(@Body BookCreateDTO dto);
 
     @Put("/{id}")
     HttpResponse<?> updateBook( @PathVariable Long id,
