@@ -4,6 +4,7 @@ import io.micronaut.serde.annotation.Serdeable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.Set;
 
 @Serdeable
 @Getter @Setter
@@ -11,8 +12,9 @@ import lombok.Setter;
 public class BookDTO {
 
     private String title;
-    private String author;
     private Long id;
+    private PublisherDTO publisher;
+    private Set<AuthorDTO> authors;
 
     public BookDTO() {}
     

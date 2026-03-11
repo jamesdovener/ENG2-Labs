@@ -4,6 +4,7 @@ import io.micronaut.http.annotation.*;
 import io.micronaut.http.client.annotation.Client;
 import uk.ac.york.cs.eng2.books.dto.BookDTO;
 import uk.ac.york.cs.eng2.books.dto.BookCreateDTO;
+import uk.ac.york.cs.eng2.books.dto.PublisherDTO;
 
 import java.util.List;
 
@@ -25,5 +26,12 @@ public interface BooksClient {
     @Delete("/{id}")
     HttpResponse<?> deleteBook(@PathVariable Long id);
 
+    @Get("/{id}/publisher")
+    HttpResponse<PublisherDTO> getBookPublisher(@PathVariable Long id);
 
+    @Put("/{id}/authors/{authorId}")
+    HttpResponse<Void> addBookAuthor(@PathVariable Long id, @PathVariable Long authorId);
+
+    @Delete("/{id}/authors/{authorId}")
+    HttpResponse<Void> deleteBookAuthor(@PathVariable Long id, @PathVariable Long authorId);
 }

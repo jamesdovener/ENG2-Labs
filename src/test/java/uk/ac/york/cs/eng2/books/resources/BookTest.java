@@ -24,19 +24,17 @@ public class BookTest {
 
     @Test
     public void testConstructor() {
-        Book book = new Book(id, author, title);
+        Book book = new Book(id, title);
         assertEquals(book.getId(), id);
-        assertEquals(book.getAuthor(), author);
         assertEquals(book.getTitle(), title);
     }
 
     @Test
     public void testToDTO() {
-        Book book = new Book(id, author, title);
+        Book book = new Book(id, title);
         BookDTO bookDTO = book.toDTO();
 
         assertEquals(book.getId(), bookDTO.getId());
-        assertEquals(book.getAuthor(), bookDTO.getAuthor());
         assertEquals(book.getTitle(), bookDTO.getTitle());
     }
 }
